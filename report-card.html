@@ -5,100 +5,225 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Report Card - Muslim Educators School Kot Hussain</title>
   <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 850px;
-      margin: 20px auto;
-      background: #fff;
-      color: #000;
-      padding: 20px;
-      border: 1px solid #003366;
-      border-radius: 8px;
+      background: #f9faff;
+      margin: 0;
+      padding: 0;
+      color: #1a1a1a;
     }
-    h1, h2 {
-      text-align: center;
+    .container {
+      max-width: 900px;
+      background: white;
+      margin: 30px auto;
+      padding: 30px 40px;
+      border: 2px solid #003366;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #003366;
+      padding-bottom: 15px;
+    }
+    header img {
+      height: 70px;
+      margin-right: 20px;
+    }
+    header h1 {
+      font-size: 1.8rem;
       color: #003366;
+      margin: 0;
+      font-weight: 700;
+      flex-grow: 1;
+    }
+    .dashboard-link {
+      display: inline-block;
+      margin-bottom: 25px;
+      color: #003366;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+    .dashboard-link:hover {
+      color: #001f4d;
+      text-decoration: underline;
     }
     label {
+      display: block;
+      margin: 15px 0 6px;
       font-weight: 600;
       color: #003366;
-      display: block;
-      margin-top: 15px;
+      font-size: 1rem;
     }
     select {
       width: 100%;
-      padding: 8px;
-      font-size: 16px;
-      margin-top: 5px;
-      border: 1px solid #003366;
-      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 1rem;
+      border: 1.8px solid #003366;
+      border-radius: 5px;
       outline: none;
+      cursor: pointer;
+      transition: border-color 0.3s;
     }
+    select:focus {
+      border-color: #001f4d;
+    }
+    /* Student & Exam info sections */
+    .info-section {
+      margin-top: 30px;
+      padding: 15px 25px;
+      background-color: #e6f0ff;
+      border-radius: 8px;
+      border: 1.5px solid #003366;
+      color: #003366;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .info-section span {
+      font-weight: 700;
+      color: #001f4d;
+    }
+    /* Table styling */
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
-      text-align: left;
+      margin-top: 30px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
     }
     th, td {
-      border: 1px solid #003366;
-      padding: 10px;
+      padding: 14px 18px;
+      border: 1.5px solid #003366;
+      text-align: center;
+      font-size: 1rem;
     }
     th {
       background-color: #003366;
       color: white;
-    }
-    .summary {
-      margin-top: 20px;
       font-weight: 700;
-      font-size: 16px;
-      text-align: right;
+      text-transform: uppercase;
     }
-    button {
-      margin-top: 20px;
+    tbody tr:nth-child(even) {
+      background-color: #f2f8ff;
+    }
+    tbody tr:hover {
+      background-color: #d7e4ff;
+    }
+    /* Summary section */
+    .summary {
+      margin-top: 25px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #003366;
+      text-align: right;
+      letter-spacing: 0.04em;
+    }
+    /* Buttons */
+    button#printBtn {
+      margin-top: 35px;
+      padding: 12px 30px;
+      font-weight: 700;
+      font-size: 1rem;
       background-color: #003366;
       color: white;
       border: none;
-      padding: 12px 25px;
+      border-radius: 7px;
       cursor: pointer;
-      font-weight: 700;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s;
+      display: none;
+      float: right;
     }
-    button:hover {
+    button#printBtn:hover {
       background-color: #001f4d;
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+      }
+      th, td {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+      }
+      button#printBtn {
+        width: 100%;
+        float: none;
+      }
+    }
+    /* Print styles */
+    @media print {
+      button#printBtn,
+      select,
+      .dashboard-link {
+        display: none !important;
+      }
+      body {
+        background: white;
+      }
+      .container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
 
-  <h1>Report Card</h1>
-  <a href="index.html" style="color:#003366; font-weight:600;">« Go to Main Dashboard</a>
+    <header>
+      <img src="logo.png" alt="School Logo" onerror="this.style.display='none'" />
+      <h1>Muslim Educators School Kot Hussain</h1>
+    </header>
 
-  <label for="studentSelect">Select Student:</label>
-  <select id="studentSelect" required>
-    <option value="">Select Student</option>
-  </select>
+    <a href="index.html" class="dashboard-link">« Back to Dashboard</a>
 
-  <label for="examSelect">Select Exam:</label>
-  <select id="examSelect" required>
-    <option value="">Select Exam</option>
-  </select>
+    <label for="studentSelect">Select Student:</label>
+    <select id="studentSelect" required>
+      <option value="">-- Select Student --</option>
+    </select>
 
-  <table id="marksTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>Subject</th>
-        <th>Marks Obtained</th>
-        <th>Max Marks</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <label for="examSelect">Select Exam:</label>
+    <select id="examSelect" required>
+      <option value="">-- Select Exam --</option>
+    </select>
 
-  <div class="summary" id="summary" style="display:none;"></div>
+    <div id="studentInfo" class="info-section" style="display:none;">
+      <p><strong>Student Name:</strong> <span id="studentName"></span></p>
+      <p><strong>Class:</strong> <span id="studentClass"></span></p>
+      <p><strong>Father's Name:</strong> <span id="studentFather"></span></p>
+      <p><strong>Contact:</strong> <span id="studentContact"></span></p>
+    </div>
 
-  <button id="printBtn" style="display:none;">Print Report Card</button>
+    <div id="examInfo" class="info-section" style="display:none;">
+      <p><strong>Exam Type:</strong> <span id="examType"></span></p>
+      <p><strong>Date:</strong> <span id="examDate"></span></p>
+    </div>
+
+    <table id="marksTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Marks Obtained</th>
+          <th>Maximum Marks</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="summary" id="summary" style="display:none;"></div>
+
+    <button id="printBtn">Print Report Card</button>
+  </div>
 
   <script>
     const studentSelect = document.getElementById('studentSelect');
@@ -108,38 +233,82 @@
     const summaryDiv = document.getElementById('summary');
     const printBtn = document.getElementById('printBtn');
 
-    // Load students from localStorage
+    const studentInfoDiv = document.getElementById('studentInfo');
+    const examInfoDiv = document.getElementById('examInfo');
+
+    const studentNameSpan = document.getElementById('studentName');
+    const studentClassSpan = document.getElementById('studentClass');
+    const studentFatherSpan = document.getElementById('studentFather');
+    const studentContactSpan = document.getElementById('studentContact');
+
+    const examTypeSpan = document.getElementById('examType');
+    const examDateSpan = document.getElementById('examDate');
+
+    // Load students into dropdown
     function loadStudents() {
       const students = JSON.parse(localStorage.getItem('registrations')) || [];
+      studentSelect.innerHTML = '<option value="">-- Select Student --</option>';
       students.forEach(student => {
         const option = document.createElement('option');
         option.value = student.studentName;
-        option.textContent = student.studentName;
+        option.textContent = `${student.studentName} - Class ${student.class}`;
         studentSelect.appendChild(option);
       });
     }
 
-    // Load exams from localStorage
+    // Load exams into dropdown
     function loadExams() {
       const exams = JSON.parse(localStorage.getItem('exams')) || [];
+      examSelect.innerHTML = '<option value="">-- Select Exam --</option>';
       exams.forEach(exam => {
         const option = document.createElement('option');
         option.value = exam.type;
-        option.textContent = `${exam.type} - Class ${exam.class}`;
+        option.textContent = `${exam.type} - Class ${exam.class} (${exam.date})`;
         examSelect.appendChild(option);
       });
     }
 
-    // Load marks for selected student and exam
+    // Show student details section
+    function showStudentInfo(studentName) {
+      const students = JSON.parse(localStorage.getItem('registrations')) || [];
+      const student = students.find(s => s.studentName === studentName);
+      if (!student) {
+        studentInfoDiv.style.display = 'none';
+        return;
+      }
+      studentNameSpan.textContent = student.studentName;
+      studentClassSpan.textContent = student.class;
+      studentFatherSpan.textContent = student.fatherName || 'N/A';
+      studentContactSpan.textContent = student.contact || 'N/A';
+      studentInfoDiv.style.display = 'block';
+    }
+
+    // Show exam details section
+    function showExamInfo(examType) {
+      const exams = JSON.parse(localStorage.getItem('exams')) || [];
+      const exam = exams.find(e => e.type === examType);
+      if (!exam) {
+        examInfoDiv.style.display = 'none';
+        return;
+      }
+      examTypeSpan.textContent = exam.type;
+      examDateSpan.textContent = exam.date || 'N/A';
+      examInfoDiv.style.display = 'block';
+    }
+
+    // Load and display marks
     function loadMarks(studentName, examType) {
-      // Assuming marks are saved in localStorage under 'marks'
-      // as array of objects: {studentName, examType, subject, marksObtained, maxMarks}
+      if (!studentName || !examType) {
+        marksTable.style.display = 'none';
+        summaryDiv.style.display = 'none';
+        printBtn.style.display = 'none';
+        return;
+      }
+
       const marks = JSON.parse(localStorage.getItem('marks')) || [];
-      const filtered = marks.filter(m => m.studentName === studentName && m.examType === examType);
+      const filteredMarks = marks.filter(m => m.studentName === studentName && m.examType === examType);
 
-      marksTableBody.innerHTML = '';
-
-      if (filtered.length === 0) {
+      if (filteredMarks.length === 0) {
         marksTable.style.display = 'none';
         summaryDiv.style.display = 'none';
         printBtn.style.display = 'none';
@@ -147,14 +316,15 @@
         return;
       }
 
+      marksTableBody.innerHTML = '';
       marksTable.style.display = '';
-      printBtn.style.display = '';
       summaryDiv.style.display = '';
+      printBtn.style.display = '';
 
       let totalObtained = 0;
       let totalMax = 0;
 
-      filtered.forEach(mark => {
+      filteredMarks.forEach(mark => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${mark.subject}</td>
@@ -177,23 +347,32 @@
       else grade = 'F';
 
       summaryDiv.innerHTML = `
-        Total Marks: ${totalObtained} / ${totalMax} <br/>
-        Percentage: ${percentage}% <br/>
-        Grade: ${grade}
+        Total Marks: <strong>${totalObtained} / ${totalMax}</strong> &nbsp;|&nbsp;
+        Percentage: <strong>${percentage}%</strong> &nbsp;|&nbsp;
+        Grade: <strong>${grade}</strong>
       `;
     }
 
-    studentSelect.addEventListener('change', () => {
-      if (studentSelect.value && examSelect.value) {
-        loadMarks(studentSelect.value, examSelect.value);
-      }
-    });
+    // Handle dropdown changes
+    function onSelectionChange() {
+      const studentName = studentSelect.value;
+      const examType = examSelect.value;
 
-    examSelect.addEventListener('change', () => {
-      if (studentSelect.value && examSelect.value) {
-        loadMarks(studentSelect.value, examSelect.value);
+      if (studentName && examType) {
+        showStudentInfo(studentName);
+        showExamInfo(examType);
+        loadMarks(studentName, examType);
+      } else {
+        studentInfoDiv.style.display = 'none';
+        examInfoDiv.style.display = 'none';
+        marksTable.style.display = 'none';
+        summaryDiv.style.display = 'none';
+        printBtn.style.display = 'none';
       }
-    });
+    }
+
+    studentSelect.addEventListener('change', onSelectionChange);
+    examSelect.addEventListener('change', onSelectionChange);
 
     printBtn.addEventListener('click', () => {
       window.print();
@@ -203,6 +382,5 @@
     loadStudents();
     loadExams();
   </script>
-
 </body>
 </html>
