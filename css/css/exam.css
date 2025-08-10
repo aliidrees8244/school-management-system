@@ -1,0 +1,30 @@
+/* exam.css - Exam module specific */
+
+.exam-toolbar { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:12px; }
+.exam-actions { display:flex; gap:8px; align-items:center; }
+
+.form-card { padding:16px; border-radius:10px; background:#fff; box-shadow:0 6px 18px rgba(12,24,48,0.04); }
+.table-card { padding:12px; border-radius:10px; background:#fff; box-shadow:0 6px 18px rgba(12,24,48,0.04); }
+
+/* Add/Edit form */
+.form-row { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+.form-row .full { grid-column:1/-1; }
+.label { font-weight:600; color:#233447; margin-bottom:6px; font-size:13px; }
+
+/* search/filter */
+.search-wrap { display:flex; gap:12px; align-items:center; margin:10px 0; }
+.search-input { flex:1; }
+
+/* table actions */
+.action-btn { padding:6px 10px; border-radius:8px; border:0; cursor:pointer; font-weight:600; }
+.edit { background:#f6d365; color:#7a4b00; }
+.delete { background:#ff7b7b; color:#7a0b0b; }
+.view { background:#dbeafe; color:#08306b; }
+
+/* No data */
+.no-data { padding:24px; text-align:center; color:var(--muted); font-style:italic; }
+
+/* small */
+@media(max-width:720px){
+  .form-row { grid-template-columns:1fr; }
+}

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exam Management - Muslim Educators School</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background: #f9f9f9;
+    color: #003366;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  th {
+    background: #003366;
+    color: white;
+  }
+  button {
+    background: #003366;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 6px;
+    font-weight: 600;
+  }
+  button.delete {
+    background: #e74c3c;
+  }
+  button.add-btn {
+    margin-bottom: 12px;
+    background: #1abc9c;
+  }
+  .form-popup {
+    background: white;
+    padding: 15px;
+    border: 1px solid #003366;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  label {
+    display: inline-block;
+    width: 90px;
+    font-weight: 600;
+  }
+  select, input[type="text"] {
+    width: 200px;
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+  .actions {
+    margin-top: 12px;
+  }
+  .back-dashboard {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 18px;
+    border: 2px solid #003366;
+    color: #003366;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .back-dashboard:hover {
+    background: #003366;
+    color: white;
+  }
+  .message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: none;
+  }
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+</style>
+</head>
+<body>
+
+<h1>Exam Management</h1>
+
+<div class="message" id="messageBox" role="alert" aria-live="polite"></div>
+
+<div class="form-popup" id="examFormContainer" style="display:none;">
+  <h3 id="formTitle">Add New Exam</h3>
+  <form id="examForm" novalidate>
+    <label for="examType">Exam Type:</label>
+    <select id="examType" required aria-required="true" aria-describedby="examTypeDesc">
+      <option value="">Select Exam Type</option>
+      <option value="Mid-Term">Mid-Term</option>
+      <option value="Final">Final</option>
+      <option value="Quiz">Quiz</option>
+      <option value="Unit Test">Unit Test</option>
+    </select>
+    <span id="examTypeDesc" class="sr-only">Choose the type of exam.</span><br/>
+
+    <label for="examClass">Class:</label>
+    <select id="examClass" required aria-required="true" aria-describedby="examClassDesc">
+      <option value="">Select Class</option>
+      <option value="Play Group">Play Group</option>
+      <option value="Nursery">Nursery</option>
+      <option value="KG">KG</option>
+      <option value="1">1st</option>
+      <option value="2">2nd</option>
+      <option value="3">3rd</option>
+      <option value="4">4th</option>
+      <option value="5">5th</option>
+      <option value="6">6th</option>
+      <option value="7">7th</option>
+      <option value="8">8th</option>
+      <option value="9">9th</option>
+      <option value="10">10th</option>
+    </select>
+    <span id="examClassDesc" class="sr-only">Choose the class for the exam.</span><br/>
+
+    <label for="examSubject">Subject:</label>
+    <select id="examSubject" required aria-required="true" aria-describedby="examSubjectDesc">
+      <option value="">Select Subject</option>
+      <option value="English">English</option>
+      <option value="Urdu">Urdu</option>
+      <option value="Mathematics">Mathematics</option>
+      <option value="Islamiat">Islamiat</option>
+      <option value="Al-Quran">Al-Quran</option>
+      <option value="General Science">General Science</option>
+      <option value="General Knowledge">General Knowledge</option>
+      <option value="Physics">Physics</option>
+      <option value="Chemistry">Chemistry</option>
+      <option value="Biology">Biology</option>
+      <option value="Computer">Computer</option>
+      <option value="Civics">Civics</option>
+      <option value="Textile & Clothing">Textile & Clothing</option>
+    </select>
+    <span id="examSubjectDesc" class="sr-only">Choose the subject for the exam.</span><br/>
+
+    <div class="actions">
+      <button type="submit" id="saveExamBtn">Save Exam</button>
+      <button type="button" id="cancelBtn">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<button class="add-btn" id="showAddFormBtn" aria-expanded="false" aria-controls="examFormContainer">+ Add New Exam</button>
+
+<table id="examsTable" aria-label="Exams">
+  <thead>
+    <tr>
+      <th>Exam Type</th>
+      <th>Class</th>
+      <th>Subject</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="examsTbody"></tbody>
+</table>
+
+<a href="index.html" class="back-dashboard">← Back to Main Dashboard</a>
+
+<script>
+  // LocalStorage key for exams
+  const examsKey = 'exams';
+
+  // Generate unique ID for exam
+  function generateId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  let exams = JSON.parse(localStorage.getItem(examsKey)) || [];
+  let editId = null;
+
+  const examsTbody = document.getElementById('examsTbody');
+  const examFormContainer = document.getElementById('examFormContainer');
+  const examForm = document.getElementById('examForm');
+  const showAddFormBtn = document.getElementById('showAddFormBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const formTitle = document.getElementById('formTitle');
+  const messageBox = document.getElementById('messageBox');
+
+  function showMessage(msg, type='success') {
+    messageBox.textContent = msg;
+    messageBox.className = 'message ' + (type === 'error' ? 'error' : 'success');
+    messageBox.style.display = 'block';
+    setTimeout(() => {
+      messageBox.style.display = 'none';
+    }, 3000);
+  }
+
+  function renderExams() {
+    examsTbody.innerHTML = '';
+    if (exams.length === 0) {
+      examsTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666;">No exams found. Please add new exams.</td></tr>';
+      return;
+    }
+    exams.forEach((exam) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${exam.type}</td>
+        <td>${exam.class}</td>
+        <td>${exam.subject}</td>
+        <td>
+          <button aria-label="Edit exam ${exam.type} for class ${exam.class}, subject ${exam.subject}" onclick="editExam('${exam.id}')">Edit</button>
+          <button class="delete" aria-label="Delete exam ${exam.type} for class ${exam.class}, subject ${exam.subject}" onclick="deleteExam('${exam.id}')">Delete</button>
+          <button aria-label="Enter marks for exam ${exam.type} for class ${exam.class}, subject ${exam.subject}" onclick="enterMarks('${exam.id}')">Enter Marks</button>
+        </td>
+      `;
+      examsTbody.appendChild(tr);
+    });
+  }
+
+  function resetForm() {
+    examForm.reset();
+    editId = null;
+    formTitle.textContent = 'Add New Exam';
+    examFormContainer.style.display = 'none';
+    showAddFormBtn.style.display = 'inline-block';
+    showAddFormBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  function showForm() {
+    examFormContainer.style.display = 'block';
+    showAddFormBtn.style.display = 'none';
+    showAddFormBtn.setAttribute('aria-expanded', 'true');
+    examForm.examType.focus();
+  }
+
+  function editExam(id) {
+    const exam = exams.find(e => e.id === id);
+    if (!exam) return;
+    examForm.examType.value = exam.type;
+    examForm.examClass.value = exam.class;
+    examForm.examSubject.value = exam.subject;
+    editId = id;
+    formTitle.textContent = 'Edit Exam';
+    showForm();
+  }
+
+  function deleteExam(id) {
+    if (confirm('Are you sure you want to delete this exam? This action cannot be undone.')) {
+      exams = exams.filter(e => e.id !== id);
+      localStorage.setItem(examsKey, JSON.stringify(exams));
+      renderExams();
+      showMessage('Exam deleted successfully.', 'success');
+    }
+  }
+
+  function enterMarks(id) {
+    const exam = exams.find(e => e.id === id);
+    if (!exam) {
+      alert('Exam not found!');
+      return;
+    }
+    const url = `add-marks.html?exam=${encodeURIComponent(exam.type)}&class=${encodeURIComponent(exam.class)}&subject=${encodeURIComponent(exam.subject)}`;
+    window.location.href = url;
+  }
+
+  showAddFormBtn.addEventListener('click', () => {
+    resetForm();
+    showForm();
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    resetForm();
+  });
+
+  examForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const newExam = {
+      id: editId || generateId(),
+      type: examForm.examType.value.trim(),
+      class: examForm.examClass.value.trim(),
+      subject: examForm.examSubject.value.trim(),
+    };
+
+    if (!newExam.type || !newExam.class || !newExam.subject) {
+      showMessage('Please fill in all fields.', 'error');
+      return;
+    }
+
+    // Check for duplicates excluding current edit exam id
+    const duplicate = exams.find(e =>
+      e.type === newExam.type &&
+      e.class === newExam.class &&
+      e.subject === newExam.subject &&
+      e.id !== newExam.id
+    );
+
+    if (duplicate) {
+      showMessage('This exam already exists.', 'error');
+      return;
+    }
+
+    if (editId) {
+      // Update exam
+      exams = exams.map(e => e.id === editId ? newExam : e);
+      showMessage('Exam updated successfully.', 'success');
+    } else {
+      // Add new exam
+      exams.push(newExam);
+      showMessage('New exam added successfully.', 'success');
+    }
+
+    localStorage.setItem(examsKey, JSON.stringify(exams));
+    renderExams();
+    resetForm();
+  });
+
+  // Initial render
+  renderExams();
+
+  // Expose functions globally for inline onclick handlers
+  window.editExam = editExam;
+  window.deleteExam = deleteExam;
+  window.enterMarks = enterMarks;
+</script>
+
+</body>
+</html>

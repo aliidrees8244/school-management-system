@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Muslim Educators School Kot Hussain</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      background: linear-gradient(135deg, #1abc9c, #16a085);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      padding: 40px 50px;
+      width: 320px;
+      text-align: center;
+      animation: fadeInDown 0.8s ease forwards;
+    }
+
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-container h2 {
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 24px;
+      letter-spacing: 1.2px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #e0f7f7;
+      font-size: 14px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      transition: box-shadow 0.3s ease;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.2);
+    }
+
+    .input-group input:focus {
+      box-shadow: 0 0 10px #1abc9c;
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 0;
+      background: #16a085;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(22, 160, 133, 0.4);
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #138d75;
+      box-shadow: 0 8px 20px rgba(19, 141, 117, 0.6);
+    }
+
+    .error-message {
+      color: #ff4b5c;
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      height: 18px;
+      visibility: hidden;
+    }
+
+    .show-error {
+      visibility: visible;
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .login-container {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Muslim Educators Login</h2>
+    <div id="error" class="error-message"></div>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" required autofocus />
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('error');
+
+    // Hardcoded user (can be extended)
+    const users = [
+      { username: 'admin', password: 'admin123' },
+      { username: 'teacher', password: 'teacher123' }
+    ];
+
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errorDiv.classList.remove('show-error');
+      const username = loginForm.username.value.trim();
+      const password = loginForm.password.value.trim();
+
+      const user = users.find(u => u.username === username && u.password === password);
+      if(user) {
+        // Save login session
+        sessionStorage.setItem('loggedInUser', JSON.stringify({ username }));
+        window.location.href = 'index.html';
+      } else {
+        errorDiv.textContent = 'Invalid username or password.';
+        errorDiv.classList.add('show-error');
+      }
+    });
+  </script>
+</body>
+</html>

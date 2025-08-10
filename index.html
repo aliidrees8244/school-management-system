@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - Muslim Educators School & Science Academy Kot Hussain</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    /* Root variables for light/dark mode */
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --sidebar-bg: #2c3e50;
+      --primary-color: #1abc9c;
+      --button-bg: #003366;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      color: #fff;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 40px;
+      line-height: 1.2;
+      padding: 0 10px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 15px 25px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #1abc9c;
+      font-weight: 700;
+    }
+
+    .sidebar a .icon {
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+      user-select: none;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 250px;
+      padding: 40px 35px;
+      flex-grow: 1;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* When sidebar is collapsed */
+    .sidebar.collapsed + .main-content {
+      margin-left: 0;
+    }
+
+    /* Page Heading */
+    h1.page-heading {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #003366;
+      user-select: none;
+    }
+
+    /* Dashboard Buttons */
+    .dashboard-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-buttons a {
+      flex: 1 1 200px;
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 18px 32px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+
+    .dashboard-buttons a:hover {
+      background-color: #159d86;
+      box-shadow: 0 6px 20px rgba(21, 157, 134, 0.5);
+    }
+
+    /* Form */
+    form {
+      max-width: 600px;
+      user-select: none;
+    }
+
+    .form-buttons {
+      margin-top: 25px;
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    button:hover {
+      background-color: #001f4d;
+    }
+
+    /* Back to Dashboard Link */
+    .back-dashboard {
+      display: inline-block;
+      margin-top: 35px;
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 12px 26px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-dashboard:hover {
+      background-color: #159d86;
+    }
+
+    /* Dark Mode Toggle Button */
+    .toggle-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--primary-color);
+      border: none;
+      padding: 12px 18px;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(26, 188, 156, 0.4);
+      transition: background-color 0.3s ease;
+      user-select: none;
+      z-index: 1100;
+    }
+
+    .toggle-btn:hover {
+      background-color: #159d86;
+    }
+
+    /* Sidebar toggle button for mobile */
+    .sidebar-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: var(--primary-color);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      z-index: 1100;
+      user-select: none;
+      box-shadow: 0 3px 10px rgba(26, 188, 156, 0.4);
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar-toggle:hover {
+      background-color: #159d86;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 20px 15px;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- LOGIN PROTECTION & LOGOUT -->
+  <script>
+    const currentUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (!currentUser) {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      sessionStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <!-- Sidebar -->
+  <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+  <nav class="sidebar" role="navigation" aria-label="Sidebar Navigation">
+    <h2>Muslim Educators School &<br>Science Academy Kot Hussain</h2>
+    <a href="index.html" class="active"><span class="icon" aria-hidden="true">🏠</span> Dashboard</a>
+    <a href="students.html"><span class="icon" aria-hidden="true">👨‍🎓</span> Students</a>
+    <a href="teachers.html"><span class="icon" aria-hidden="true">👩‍🏫</span> Teachers</a>
+    <a href="exam-management.html"><span class="icon" aria-hidden="true">📚</span> Exams</a>
+    <a href="attendance.html"><span class="icon" aria-hidden="true">📅</span> Attendance</a>
+    <a href="report-card.html"><span class="icon" aria-hidden="true">📝</span> Report Card</a>
+    <a href="fee-management.html"><span class="icon" aria-hidden="true">💰</span> Fee Management</a>
+    <a href="result-summary.html"><span class="icon" aria-hidden="true">📊</span> Result Summary</a>
+    <a href="settings.html"><span class="icon" aria-hidden="true">⚙️</span> Settings</a>
+    <a href="notifications.html"><span class="icon" aria-hidden="true">📢</span> Notifications</a>
+    <a href="javascript:void(0)" onclick="logout()" aria-label="Logout"><span class="icon" aria-hidden="true">🚪</span> Logout</a>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content" role="main">
+    <h1 class="page-heading">Welcome to Muslim Educators School & Science Academy Kot Hussain</h1>
+
+    <section class="dashboard-buttons" aria-label="Main Actions">
+      <a href="student-registration.html" role="button">+ Add New Student</a>
+      <a href="students.html" role="button">View All Students</a>
+      <a href="exam-management.html" role="button">Manage Exams</a>
+    </section>
+
+    <!-- Optional Student Form (remove if unused) -->
+    <form id="studentForm" aria-label="Student Entry Form" style="display:none;">
+      <!-- Form fields here if needed -->
+
+      <div class="form-buttons">
+        <button type="submit">Save Student</button>
+        <button type="reset">Clear</button>
+      </div>
+    </form>
+
+    <!-- Back to dashboard link (optional) -->
+    <a href="index.html" class="back-dashboard" aria-label="Go to Main Dashboard">« Go to Main Dashboard</a>
+  </main>
+
+  <!-- Dark Mode Toggle Button -->
+  <button class="toggle-btn" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+
+  <script>
+    // Sidebar toggle for small screens
+    const sidebarToggleBtn = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+    // Dark mode toggle
+    const toggleBtn = document.querySelector('.toggle-btn');
+
+    function setDarkMode(enabled) {
+      if (enabled) {
+        document.documentElement.style.setProperty('--bg-color', '#1e1e1e');
+        document.documentElement.style.setProperty('--text-color', '#f0f0f0');
+        document.documentElement.style.setProperty('--sidebar-bg', '#111');
+        document.documentElement.style.setProperty('--primary-color', '#159d86');
+        document.documentElement.style.setProperty('--button-bg', '#159d86');
+        toggleBtn.textContent = '☀️ Light Mode';
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        document.documentElement.style.setProperty('--bg-color', '#f4f4f4');
+        document.documentElement.style.setProperty('--text-color', '#333');
+        document.documentElement.style.setProperty('--sidebar-bg', '#2c3e50');
+        document.documentElement.style.setProperty('--primary-color', '#1abc9c');
+        document.documentElement.style.setProperty('--button-bg', '#003366');
+        toggleBtn.textContent = '🌙 Dark Mode';
+        localStorage.setItem('darkMode', 'false');
+      }
+    }
+
+    // Initialize dark mode based on localStorage
+    const darkModeSaved = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkModeSaved);
+
+    toggleBtn.addEventListener('click', () => {
+      setDarkMode(localStorage.getItem('darkMode') !== 'true');
+    });
+  </script>
+</body>
+
+</html>

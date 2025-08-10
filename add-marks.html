@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Enter Marks - Muslim Educators School</title>
+<style>
+  :root {
+    --brand: #1abc9c;
+    --accent: #2980b9;
+    --bg: #f4f6f8;
+    --card: #fff;
+    --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    font-family: "Segoe UI", sans-serif;
+  }
+  body {
+    background: var(--bg);
+    margin: 0;
+    padding: 18px;
+    color: #222;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 12px auto;
+  }
+  .card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+  h1 {
+    margin: 0 0 6px;
+    color: #003366;
+  }
+  .top {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .btn {
+    background: var(--brand);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn.secondary {
+    background: var(--accent);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th,
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+  }
+  th {
+    background: var(--brand);
+    color: #fff;
+  }
+  input[type="number"] {
+    width: 80px;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  .muted {
+    color: #666;
+    font-size: 13px;
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .hint {
+    margin-top: 8px;
+    color: #666;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="top">
+      <button class="btn" id="backBtn">← Back to Manage Exams</button>
+      <h1 id="pageTitle">Enter Marks</h1>
+    </div>
+
+    <div id="examInfo" class="muted"></div>
+
+    <table id="studentsTable" aria-label="students">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Marks (0-100)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="studentsTbody"></tbody>
+    </table>
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn secondary" id="addStudentBtn">+ Add Student</button>
+      <button class="btn" id="saveBtn">Save Marks</button>
+      <button class="btn ghost" id="exportCsvBtn" style="background:#fff;border:1px solid #ddd;color:#333">Export CSV</button>
+      <div class="hint">Marks stored locally. You can edit and re-save anytime.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // parse params
+  const params = new URLSearchParams(window.location.search);
+  const examName = params.get('exam') || '';
+  const className = params.get('class') || '';
+  const subjectName = params.get('subject') || '';
+
+  const pageTitle = document.getElementById('pageTitle');
+  const examInfo = document.getElementById('examInfo');
+  const studentsTbody = document.getElementById('studentsTbody');
+  const backBtn = document.getElementById('backBtn');
+  const addStudentBtn = document.getElementById('addStudentBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+  if (!examName || !className || !subjectName) {
+    pageTitle.textContent = 'Missing exam parameters';
+    examInfo.textContent = 'Please open this page from Manage Exams.';
+  } else {
+    pageTitle.textContent = `Enter Marks — ${decodeURIComponent(examName)}`;
+    examInfo.textContent = `Class: ${decodeURIComponent(className)}  |  Subject: ${decodeURIComponent(subjectName)}`;
+  }
+
+  // Load students from registration data
+  let registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
+  let classStudents = registrations.filter(s => s.class === className);
+
+  // Assign unique IDs to students (using index)
+  classStudents = classStudents.map((stu, idx) => ({ ...stu, id: 'stu_' + idx }));
+
+  // marks localStorage key
+  function safeKeyPart(s) {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  }
+  const marksKey = `marks__${safeKeyPart(examName)}__${safeKeyPart(className)}__${safeKeyPart(subjectName)}`;
+  let marksObj = JSON.parse(localStorage.getItem(marksKey) || '{}');
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[c]));
+  }
+
+  function renderStudents() {
+    studentsTbody.innerHTML = '';
+    if (classStudents.length === 0) {
+      studentsTbody.innerHTML = `<tr><td colspan="3" class="muted">No registered students found for class "${escapeHtml(className)}".</td></tr>`;
+      return;
+    }
+    classStudents.forEach(stu => {
+      const val = marksObj[stu.id] !== undefined ? marksObj[stu.id] : '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(stu.studentName)}</td>
+        <td><input type="number" min="0" max="100" value="${val}" data-id="${stu.id}"></td>
+        <td><!-- No actions --></td>
+      `;
+      studentsTbody.appendChild(tr);
+    });
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const inputs = studentsTbody.querySelectorAll('input[type="number"]');
+    const newMarks = {};
+    for (const inp of inputs) {
+      const id = inp.dataset.id;
+      const v = inp.value.trim();
+      if (v === '') {
+        alert('Please fill all marks (use 0 if absent).');
+        return;
+      }
+      const num = Number(v);
+      if (isNaN(num) || num < 0 || num > 100) {
+        alert('Marks must be between 0 and 100');
+        return;
+      }
+      newMarks[id] = num;
+    }
+    localStorage.setItem(marksKey, JSON.stringify(newMarks));
+    marksObj = newMarks;
+    alert('Marks saved successfully!');
+  });
+
+  exportCsvBtn.addEventListener('click', () => {
+    if (classStudents.length === 0) {
+      alert('No student data to export.');
+      return;
+    }
+    const rows = [['Student Name', 'Marks']];
+    classStudents.forEach(stu => {
+      rows.push([stu.studentName, marksObj[stu.id] !== undefined ? marksObj[stu.id] : '']);
+    });
+    const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `marks_${safeKeyPart(examName)}_${safeKeyPart(className)}_${safeKeyPart(subjectName)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  backBtn.addEventListener('click', () => {
+    window.location.href = 'exam-management.html';
+  });
+
+  // Add button to go back to main dashboard
+  const wrap = document.querySelector('.wrap');
+  const backDashboardBtn = document.createElement('button');
+  backDashboardBtn.textContent = '← Back to Main Dashboard';
+  backDashboardBtn.className = 'btn secondary';
+  backDashboardBtn.style.marginTop = '12px';
+  backDashboardBtn.onclick = () => window.location.href = 'index.html';
+  wrap.insertBefore(backDashboardBtn, wrap.firstChild);
+
+  // Initial render
+  renderStudents();
+</script>
+</body>
+</html>

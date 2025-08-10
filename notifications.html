@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notification Center - Muslim Educators School Kot Hussain</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      margin: 20px auto;
+      color: #212121;
+      max-width: 900px;
+      padding: 0 15px;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 30px;
+      user-select: none;
+    }
+    label {
+      font-weight: 700;
+      margin-top: 15px;
+      display: block;
+    }
+    select, textarea {
+      margin-top: 8px;
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 120px;
+    }
+    .student-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      padding: 10px;
+    }
+    .student-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .student-item label {
+      margin-left: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-weight: 700;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.5);
+      user-select: none;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #128c34;
+    }
+    .wa-links {
+      margin-top: 30px;
+    }
+    .wa-link {
+      display: block;
+      margin-bottom: 10px;
+      background-color: #128c34;
+      color: white;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      word-break: break-word;
+    }
+    .wa-link:hover {
+      background-color: #0b5c1a;
+    }
+    a.back {
+      display: inline-block;
+      margin-top: 30px;
+      color: #003366;
+      font-weight: 600;
+      text-decoration: none;
+      user-select: none;
+    }
+    a.back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Notification Center</h1>
+
+  <form id="notificationForm">
+    <label for="notificationType">Select Notification Type:</label>
+    <select id="notificationType" required>
+      <option value="" disabled selected>-- Choose notification type --</option>
+      <option value="routine">Routine Notification</option>
+      <option value="monthly">Monthly Report</option>
+      <option value="firstTerm">First Term Report</option>
+      <option value="finalTerm">Final Term Report</option>
+      <option value="annual">Annual Report</option>
+    </select>
+
+    <label for="customMessage">Customize Message:</label>
+    <textarea id="customMessage" placeholder="Write your message here..."></textarea>
+
+    <label>Select Students to Notify:</label>
+    <div>
+      <input type="checkbox" id="selectAll" />
+      <label for="selectAll"><strong>Select All Students</strong></label>
+    </div>
+
+    <div class="student-list" id="studentList" aria-label="List of students with checkboxes">
+      <!-- Student checkboxes inserted here dynamically -->
+    </div>
+
+    <button type="submit">Generate WhatsApp Links</button>
+  </form>
+
+  <div class="wa-links" id="waLinks" aria-live="polite" role="region" aria-atomic="true"></div>
+
+  <a href="index.html" class="back" aria-label="Back to Dashboard">← Back to Dashboard</a>
+
+<script>
+  const students = JSON.parse(localStorage.getItem("registrations")) || [];
+  const studentList = document.getElementById('studentList');
+  const selectAllCheckbox = document.getElementById('selectAll');
+  const customMessageTextarea = document.getElementById('customMessage');
+  const notificationTypeSelect = document.getElementById('notificationType');
+  const waLinksDiv = document.getElementById('waLinks');
+
+  // Populate student checkboxes
+  students.forEach((student, idx) => {
+    const id = `student_${idx}`;
+    const labelText = `${student.studentName} (Class ${student.class}, ${student.section}) - Guardian: ${student.guardianName || 'N/A'}`;
+    const div = document.createElement('div');
+    div.className = 'student-item';
+    div.innerHTML = `
+      <input type="checkbox" id="${id}" name="students" value="${idx}" />
+      <label for="${id}">${labelText}</label>
+    `;
+    studentList.appendChild(div);
+  });
+
+  // Select/deselect all students
+  selectAllCheckbox.addEventListener('change', () => {
+    const checkboxes = document.querySelectorAll('input[name="students"]');
+    checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+  });
+
+  // Default messages for notification types
+  const defaultMessages = {
+    routine: "Assalamu Alaikum, this is a routine notification from Muslim Educators School & Science Academy Kot Hussain.",
+    monthly: "Assalamu Alaikum, the monthly report is now available. Please check the school portal or contact the administration.",
+    firstTerm: "Assalamu Alaikum, the First Term Report Card has been released. Please visit the school office to collect it.",
+    finalTerm: "Assalamu Alaikum, the Final Term Report Card has been released. Please visit the school office to collect it.",
+    annual: "Assalamu Alaikum, the Annual Report Card has been released. Please visit the school office to collect it."
+  };
+
+  notificationTypeSelect.addEventListener('change', () => {
+    const type = notificationTypeSelect.value;
+    customMessageTextarea.value = defaultMessages[type] || '';
+  });
+
+  // Generate WhatsApp links
+  document.getElementById('notificationForm').addEventListener('submit', e => {
+    e.preventDefault();
+    waLinksDiv.innerHTML = '';
+
+    const selectedIndexes = Array.from(document.querySelectorAll('input[name="students"]:checked'))
+      .map(cb => parseInt(cb.value));
+
+    if (selectedIndexes.length === 0) {
+      alert("Please select at least one student to notify.");
+      return;
+    }
+
+    const message = customMessageTextarea.value.trim();
+    if (!message) {
+      alert("Please write a message or select a notification type.");
+      return;
+    }
+
+    function createWhatsAppLink(phone, msg) {
+      if (!phone) return null;
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) cleaned = '92' + cleaned.slice(1);
+      if (!cleaned.startsWith('92')) cleaned = '92' + cleaned;
+      return `https://wa.me/${cleaned}?text=${encodeURIComponent(msg)}`;
+    }
+
+    selectedIndexes.forEach(idx => {
+      const stu = students[idx];
+      const number = stu.guardianContact || stu.contactNumber || '';
+      const waLink = createWhatsAppLink(number, message);
+      if (waLink) {
+        const a = document.createElement('a');
+        a.href = waLink;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.className = 'wa-link';
+        a.textContent = `Send WhatsApp to ${stu.guardianName || stu.fatherName || stu.studentName} (${stu.studentName})`;
+        waLinksDiv.appendChild(a);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

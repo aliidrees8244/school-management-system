@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Report Card - Muslim Educators School Kot Hussain</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 850px;
+      margin: 20px auto;
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border: 1px solid #003366;
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #003366;
+    }
+    label {
+      font-weight: 600;
+      color: #003366;
+      display: block;
+      margin-top: 15px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 5px;
+      border: 1px solid #003366;
+      border-radius: 4px;
+      outline: none;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th, td {
+      border: 1px solid #003366;
+      padding: 10px;
+    }
+    th {
+      background-color: #003366;
+      color: white;
+    }
+    .summary {
+      margin-top: 20px;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: right;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #001f4d;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Report Card</h1>
+  <a href="index.html" style="color:#003366; font-weight:600;">« Go to Main Dashboard</a>
+
+  <label for="studentSelect">Select Student:</label>
+  <select id="studentSelect" required>
+    <option value="">Select Student</option>
+  </select>
+
+  <label for="examSelect">Select Exam:</label>
+  <select id="examSelect" required>
+    <option value="">Select Exam</option>
+  </select>
+
+  <table id="marksTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Marks Obtained</th>
+        <th>Max Marks</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="summary" id="summary" style="display:none;"></div>
+
+  <button id="printBtn" style="display:none;">Print Report Card</button>
+
+  <script>
+    const studentSelect = document.getElementById('studentSelect');
+    const examSelect = document.getElementById('examSelect');
+    const marksTable = document.getElementById('marksTable');
+    const marksTableBody = marksTable.querySelector('tbody');
+    const summaryDiv = document.getElementById('summary');
+    const printBtn = document.getElementById('printBtn');
+
+    // Load students from localStorage
+    function loadStudents() {
+      const students = JSON.parse(localStorage.getItem('registrations')) || [];
+      students.forEach(student => {
+        const option = document.createElement('option');
+        option.value = student.studentName;
+        option.textContent = student.studentName;
+        studentSelect.appendChild(option);
+      });
+    }
+
+    // Load exams from localStorage
+    function loadExams() {
+      const exams = JSON.parse(localStorage.getItem('exams')) || [];
+      exams.forEach(exam => {
+        const option = document.createElement('option');
+        option.value = exam.type;
+        option.textContent = `${exam.type} - Class ${exam.class}`;
+        examSelect.appendChild(option);
+      });
+    }
+
+    // Load marks for selected student and exam
+    function loadMarks(studentName, examType) {
+      // Assuming marks are saved in localStorage under 'marks'
+      // as array of objects: {studentName, examType, subject, marksObtained, maxMarks}
+      const marks = JSON.parse(localStorage.getItem('marks')) || [];
+      const filtered = marks.filter(m => m.studentName === studentName && m.examType === examType);
+
+      marksTableBody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        marksTable.style.display = 'none';
+        summaryDiv.style.display = 'none';
+        printBtn.style.display = 'none';
+        alert("No marks found for this student & exam.");
+        return;
+      }
+
+      marksTable.style.display = '';
+      printBtn.style.display = '';
+      summaryDiv.style.display = '';
+
+      let totalObtained = 0;
+      let totalMax = 0;
+
+      filtered.forEach(mark => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${mark.subject}</td>
+          <td>${mark.marksObtained}</td>
+          <td>${mark.maxMarks}</td>
+        `;
+        marksTableBody.appendChild(tr);
+        totalObtained += Number(mark.marksObtained);
+        totalMax += Number(mark.maxMarks);
+      });
+
+      const percentage = ((totalObtained / totalMax) * 100).toFixed(2);
+      let grade = '';
+
+      if (percentage >= 90) grade = 'A+';
+      else if (percentage >= 80) grade = 'A';
+      else if (percentage >= 70) grade = 'B';
+      else if (percentage >= 60) grade = 'C';
+      else if (percentage >= 50) grade = 'D';
+      else grade = 'F';
+
+      summaryDiv.innerHTML = `
+        Total Marks: ${totalObtained} / ${totalMax} <br/>
+        Percentage: ${percentage}% <br/>
+        Grade: ${grade}
+      `;
+    }
+
+    studentSelect.addEventListener('change', () => {
+      if (studentSelect.value && examSelect.value) {
+        loadMarks(studentSelect.value, examSelect.value);
+      }
+    });
+
+    examSelect.addEventListener('change', () => {
+      if (studentSelect.value && examSelect.value) {
+        loadMarks(studentSelect.value, examSelect.value);
+      }
+    });
+
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    // Initial load
+    loadStudents();
+    loadExams();
+  </script>
+
+</body>
+</html>

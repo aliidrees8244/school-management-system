@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings - Muslim Educators School Kot Hussain</title>
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .settings-container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .settings-container h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"], input[type="color"], input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .preview {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .preview img {
+      max-width: 120px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .btn-save {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: auto;
+      font-size: 16px;
+    }
+    .btn-save:hover {
+      background: #2980b9;
+    }
+    .theme-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2 id="sidebarSchoolName">Muslim Educators School<br>Kot Hussain</h2>
+    <a href="index.html">🏠 Dashboard</a>
+    <a href="student-registration.html">📄 Register Student</a>
+    <a href="students.html">👨‍🎓 View Students</a>
+    <a href="report-card.html">📝 Report Card</a>
+    <a href="fee-management.html">💰 Fee Management</a>
+    <a href="attendance.html">📅 Attendance</a>
+    <a href="results-summary.html">📊 Results Summary</a>
+    <a href="settings.html" class="active">⚙ Settings</a>
+    <a href="javascript:void(0)" onclick="logout()">🚪 Logout</a>
+
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="settings-container">
+      <h2>⚙ System Settings</h2>
+
+      <!-- School Name -->
+      <div class="form-group">
+        <label>School Name:</label>
+        <input type="text" id="schoolNameInput" placeholder="Enter School Name">
+      </div>
+
+      <!-- Logo Upload -->
+      <div class="form-group">
+        <label>School Logo:</label>
+        <input type="file" id="logoInput" accept="image/*">
+      </div>
+
+      <!-- Theme Color -->
+      <div class="form-group">
+        <label>Theme Color:</label>
+        <input type="color" id="themeColorPicker">
+      </div>
+
+      <!-- Dark Mode Toggle -->
+      <div class="form-group theme-switch">
+        <label>Dark Mode:</label>
+        <input type="checkbox" id="darkModeToggle">
+      </div>
+
+      <!-- Preview -->
+      <div class="preview">
+        <h3 id="previewSchoolName">Muslim Educators School Kot Hussain</h3>
+        <img id="previewLogo" src="logo.png" alt="School Logo">
+      </div>
+
+      <!-- Save Button -->
+      <button class="btn-save" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+
+  <script>
+    // Load saved settings
+    window.onload = function() {
+      const savedName = localStorage.getItem("schoolName");
+      const savedLogo = localStorage.getItem("schoolLogo");
+      const savedTheme = localStorage.getItem("themeColor");
+      const darkMode = localStorage.getItem("darkMode") === "true";
+
+      if (savedName) {
+        document.getElementById("schoolNameInput").value = savedName;
+        document.getElementById("previewSchoolName").textContent = savedName;
+        document.getElementById("sidebarSchoolName").innerHTML = savedName.replace(" ", "<br>");
+      }
+
+      if (savedLogo) {
+        document.getElementById("previewLogo").src = savedLogo;
+      }
+
+      if (savedTheme) {
+        document.documentElement.style.setProperty('--sidebar-color', savedTheme);
+        document.getElementById("themeColorPicker").value = savedTheme;
+      }
+
+      document.getElementById("darkModeToggle").checked = darkMode;
+      if (darkMode) enableDarkMode();
+    };
+
+    // Live Preview - School Name
+    document.getElementById("schoolNameInput").addEventListener("input", function() {
+      document.getElementById("previewSchoolName").textContent = this.value;
+    });
+
+    // Live Preview - Logo
+    document.getElementById("logoInput").addEventListener("change", function(event) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("previewLogo").src = e.target.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    });
+
+    // Save Settings
+    function saveSettings() {
+      const name = document.getElementById("schoolNameInput").value;
+      const logoFile = document.getElementById("logoInput").files[0];
+      const themeColor = document.getElementById("themeColorPicker").value;
+      const darkMode = document.getElementById("darkModeToggle").checked;
+
+      localStorage.setItem("schoolName", name);
+      localStorage.setItem("themeColor", themeColor);
+      localStorage.setItem("darkMode", darkMode);
+
+      document.documentElement.style.setProperty('--sidebar-color', themeColor);
+      if (darkMode) {
+        enableDarkMode();
+      } else {
+        disableDarkMode();
+      }
+
+      if (logoFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          localStorage.setItem("schoolLogo", e.target.result);
+        };
+        reader.readAsDataURL(logoFile);
+      }
+
+      alert("✅ Settings saved successfully!");
+    }
+
+    // Dark Mode Functions
+    function enableDarkMode() {
+      document.body.style.setProperty('--bg-color', '#333');
+      document.body.style.setProperty('--text-color', '#fff');
+      document.body.style.setProperty('--sidebar-color', '#111');
+    }
+
+    function disableDarkMode() {
+      document.body.style.setProperty('--bg-color', '#f4f4f4');
+      document.body.style.setProperty('--text-color', '#333');
+      document.documentElement.style.setProperty('--sidebar-color', localStorage.getItem("themeColor") || '#2c3e50');
+    }
+  </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const savedName = localStorage.getItem("schoolName");
+    const savedLogo = localStorage.getItem("schoolLogo");
+    const savedTheme = localStorage.getItem("themeColor");
+    const darkMode = localStorage.getItem("darkMode") === "true";
+
+    if (savedName) {
+      const titleElem = document.getElementById("sidebarSchoolName");
+      if (titleElem) {
+        titleElem.innerHTML = savedName.replace(" ", "<br>");
+      }
+    }
+
+    if (savedLogo) {
+      // You can also place the logo somewhere if needed
+    }
+
+    if (savedTheme) {
+      document.documentElement.style.setProperty('--sidebar-color', savedTheme);
+    }
+
+    if (darkMode) {
+      document.body.style.setProperty('--bg-color', '#333');
+      document.body.style.setProperty('--text-color', '#fff');
+      document.body.style.setProperty('--sidebar-color', '#111');
+    }
+  });
+</script>
+
+<script src="script.js"></script>
+
+</body>
+</html>

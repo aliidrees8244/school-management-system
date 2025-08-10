@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teacher Management - Muslim Educators School</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color, #f4f4f4);
+      color: var(--text-color, #333);
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg, #2c3e50);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 40px;
+      line-height: 1.2;
+      padding: 0 10px;
+      user-select: none;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 15px 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      user-select: none;
+      gap: 10px;
+      font-size: 16px;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #1abc9c;
+      font-weight: 700;
+    }
+    .sidebar a .icon {
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+    /* Main content */
+    .main-content {
+      margin-left: 250px;
+      padding: 40px 35px;
+      flex-grow: 1;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+    /* Page Heading */
+    h1.page-heading {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: var(--primary-color, #003366);
+      user-select: none;
+    }
+    /* Form */
+    form {
+      max-width: 700px;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+    form h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--primary-color, #003366);
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.3s;
+      font-family: inherit;
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #1abc9c;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-buttons {
+      display: flex;
+      gap: 20px;
+    }
+    button {
+      background-color: var(--button-bg, #003366);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #001f4d;
+    }
+    /* Teacher Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background-color: var(--primary-color, #1abc9c);
+      color: white;
+      user-select: none;
+    }
+    th, td {
+      padding: 12px 18px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    tbody tr:hover {
+      background-color: #f1f9f8;
+    }
+    .action-btn {
+      cursor: pointer;
+      border: none;
+      padding: 6px 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      color: white;
+      margin-right: 6px;
+    }
+    .edit-btn {
+      background-color: #3498db;
+    }
+    .edit-btn:hover {
+      background-color: #217dbb;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+    }
+    .delete-btn:hover {
+      background-color: #b93225;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px 15px;
+      }
+    }
+    /* Sidebar Toggle Button */
+    .sidebar-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: var(--primary-color, #1abc9c);
+      border: none;
+      color: white;
+      font-size: 24px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      z-index: 1100;
+      user-select: none;
+      box-shadow: 0 3px 10px rgba(26, 188, 156, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    .sidebar-toggle:hover {
+      background-color: #159d86;
+    }
+    @media (max-width: 768px) {
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+  <nav class="sidebar" role="navigation" aria-label="Sidebar Navigation">
+    <h2>Muslim Educators School &<br>Science Academy Kot Hussain</h2>
+    <a href="index.html" class="icon-link"><span class="icon">🏠</span> Dashboard</a>
+    <a href="students.html" class="icon-link"><span class="icon">👨‍🎓</span> Students</a>
+    <a href="teachers.html" class="icon-link active"><span class="icon">👩‍🏫</span> Teachers</a>
+    <a href="exam-management.html" class="icon-link"><span class="icon">📚</span> Exams</a>
+    <a href="javascript:void(0)" onclick="logout()" class="icon-link"><span class="icon">🚪</span> Logout</a>
+  </nav>
+
+  <main class="main-content" role="main">
+    <h1 class="page-heading">Teacher Management</h1>
+
+    <form id="teacherForm" aria-label="Add/Edit Teacher">
+      <h2>Add / Edit Teacher</h2>
+
+      <label for="teacherName">Teacher Name</label>
+      <input type="text" id="teacherName" name="teacherName" placeholder="Full name" required />
+
+      <label for="fatherName">Father's Name</label>
+      <input type="text" id="fatherName" name="fatherName" placeholder="Full name" required />
+
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" name="dob" required />
+
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender" required>
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+
+      <label for="contact">Contact Number</label>
+      <input type="text" id="contact" name="contact" placeholder="03XXXXXXXXX" pattern="[0-9]{11}" title="Enter 11 digit phone number" required />
+
+      <label for="address">Address</label>
+      <textarea id="address" name="address" placeholder="Full postal address" required></textarea>
+
+      <label for="subject">Subject(s)</label>
+      <input type="text" id="subject" name="subject" placeholder="Subjects taught, comma separated" required />
+
+      <div class="form-buttons">
+        <button type="submit" id="saveBtn">Save Teacher</button>
+        <button type="reset" id="clearBtn">Clear</button>
+      </div>
+    </form>
+
+    <section aria-label="Teacher List">
+      <table id="teachersTable" aria-describedby="teacherListDesc">
+        <caption id="teacherListDesc" style="caption-side: bottom; text-align: left; padding: 10px 0; font-size: 13px; color: #555;">
+          List of registered teachers. Click Edit or Delete to modify records.
+        </caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Father's Name</th>
+            <th>DOB</th>
+            <th>Gender</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Subject(s)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Teacher rows go here -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // Login check and logout function
+    const currentUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (!currentUser) {
+      window.location.href = "login.html";
+    }
+    function logout() {
+      sessionStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    // DOM Elements
+    const teacherForm = document.getElementById('teacherForm');
+    const teachersTableBody = document.querySelector('#teachersTable tbody');
+    const saveBtn = document.getElementById('saveBtn');
+
+    let teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+    let editIndex = -1; // track editing record
+
+    // Render teachers list
+    function renderTeachers() {
+      teachersTableBody.innerHTML = '';
+      if (teachers.length === 0) {
+        teachersTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">No teachers registered yet.</td></tr>';
+        return;
+      }
+      teachers.forEach((t, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.teacherName}</td>
+          <td>${t.fatherName}</td>
+          <td>${t.dob}</td>
+          <td>${t.gender}</td>
+          <td>${t.contact}</td>
+          <td>${t.address}</td>
+          <td>${t.subject}</td>
+          <td>
+            <button class="action-btn edit-btn" aria-label="Edit ${t.teacherName}" data-index="${index}">Edit</button>
+            <button class="action-btn delete-btn" aria-label="Delete ${t.teacherName}" data-index="${index}">Delete</button>
+          </td>
+        `;
+        teachersTableBody.appendChild(tr);
+      });
+    }
+
+    // Clear form
+    function clearForm() {
+      teacherForm.reset();
+      editIndex = -1;
+      saveBtn.textContent = 'Save Teacher';
+    }
+
+    // Populate form for editing
+    function populateForm(index) {
+      const t = teachers[index];
+      teacherForm.teacherName.value = t.teacherName;
+      teacherForm.fatherName.value = t.fatherName;
+      teacherForm.dob.value = t.dob;
+      teacherForm.gender.value = t.gender;
+      teacherForm.contact.value = t.contact;
+      teacherForm.address.value = t.address;
+      teacherForm.subject.value = t.subject;
+      editIndex = index;
+      saveBtn.textContent = 'Update Teacher';
+    }
+
+    // Save or update teacher record
+    teacherForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const data = {
+        teacherName: teacherForm.teacherName.value.trim(),
+        fatherName: teacherForm.fatherName.value.trim(),
+        dob: teacherForm.dob.value,
+        gender: teacherForm.gender.value,
+        contact: teacherForm.contact.value.trim(),
+        address: teacherForm.address.value.trim(),
+        subject: teacherForm.subject.value.trim(),
+      };
+
+      if (editIndex >= 0) {
+        teachers[editIndex] = data;
+      } else {
+        teachers.push(data);
+      }
+      localStorage.setItem('teachers', JSON.stringify(teachers));
+      renderTeachers();
+      clearForm();
+    });
+
+    // Handle Edit/Delete button clicks using event delegation
+    teachersTableBody.addEventListener('click', e => {
+      if (e.target.classList.contains('edit-btn')) {
+        const idx = parseInt(e.target.getAttribute('data-index'), 10);
+        populateForm(idx);
+      } else if (e.target.classList.contains('delete-btn')) {
+        const idx = parseInt(e.target.getAttribute('data-index'), 10);
+        if (confirm('Are you sure you want to delete this teacher?')) {
+          teachers.splice(idx, 1);
+          localStorage.setItem('teachers', JSON.stringify(teachers));
+          renderTeachers();
+          clearForm();
+        }
+      }
+    });
+
+    // Initialize
+    renderTeachers();
+
+    // Sidebar toggle for small screens
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggleBtn = document.querySelector('.sidebar-toggle');
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+  </script>
+</body>
+</html>

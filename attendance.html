@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Attendance - Muslim Educators School Kot Hussain</title>
+  <style>
+    /* Base & Layout */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      color: #000;
+      background: #fff;
+      font-size: 14px;
+      line-height: 1.4;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: #003366;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: background-color 0.3s;
+    }
+    .sidebar a .icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #0056b3;
+      color: #fff;
+    }
+
+    /* Main content */
+    .main-content {
+      flex-grow: 1;
+      padding: 25px 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      overflow-y: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    .top-buttons {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .top-buttons a {
+      text-decoration: none;
+      background-color: #003366;
+      color: #fff;
+      padding: 10px 20px;
+      margin: 0 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .top-buttons a:hover {
+      background-color: #001f4d;
+    }
+    label {
+      font-weight: 600;
+      color: #003366;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #003366;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #003366;
+      color: white;
+      font-weight: 700;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f9ff;
+    }
+    button {
+      background-color: #003366;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #001f4d;
+    }
+    input[type="date"] {
+      padding: 7px 12px;
+      font-size: 16px;
+      border: 1px solid #003366;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      outline: none;
+      display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      .sidebar a {
+        flex: 1 0 auto;
+        justify-content: center;
+        font-size: 14px;
+      }
+      .main-content {
+        padding: 15px 20px;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="sidebar" role="navigation" aria-label="Sidebar Navigation">
+    <h2>Muslim Educators School &<br>Science Academy Kot Hussain</h2>
+    <a href="index.html"><span class="icon">🏠</span> Dashboard</a>
+    <a href="students.html"><span class="icon">👨‍🎓</span> Students</a>
+    <a href="teachers.html"><span class="icon">👩‍🏫</span> Teachers</a>
+    <a href="exam-management.html"><span class="icon">📚</span> Exams</a>
+    <a href="attendance.html" class="active"><span class="icon">📅</span> Attendance</a>
+    <a href="report-card.html"><span class="icon">📝</span> Report Card</a>
+    <a href="fee-management.html"><span class="icon">💰</span> Fee Management</a>
+    <a href="result-summary.html"><span class="icon">📊</span> Result Summary</a>
+    <a href="settings.html"><span class="icon">⚙️</span> Settings</a>
+    <a href="notifications.html"><span class="icon">📢</span> Notifications</a>
+    <a href="javascript:void(0)" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+  </nav>
+
+  <main class="main-content">
+    <h1>Attendance Management</h1>
+    <div class="top-buttons">
+      <a href="index.html">« Go to Main Dashboard</a>
+    </div>
+
+    <label for="attendanceDate">Select Date:</label>
+    <input type="date" id="attendanceDate" />
+
+    <form id="attendanceForm">
+      <table>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Class</th>
+            <th>Section</th>
+            <th>Present</th>
+            <th>Absent</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+          <!-- Students list will load here -->
+        </tbody>
+      </table>
+
+      <button type="submit">Save Attendance</button>
+    </form>
+  </main>
+
+  <script>
+    function logout() {
+      alert("Logging out...");
+      // Add your logout logic here
+    }
+
+    const attendanceDateInput = document.getElementById('attendanceDate');
+    const attendanceTableBody = document.getElementById('attendanceTableBody');
+    const attendanceForm = document.getElementById('attendanceForm');
+
+    // Set default date to today in yyyy-mm-dd format
+    attendanceDateInput.value = new Date().toISOString().split('T')[0];
+
+    // Load students from localStorage
+    function loadStudents() {
+      const students = JSON.parse(localStorage.getItem('registrations')) || [];
+      attendanceTableBody.innerHTML = '';
+
+      if (students.length === 0) {
+        attendanceTableBody.innerHTML = '<tr><td colspan="5">No students registered.</td></tr>';
+        return;
+      }
+
+      students.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${student.studentName}</td>
+          <td>${student.class}</td>
+          <td>${student.section}</td>
+          <td><input type="radio" name="attendance_${index}" value="Present" required></td>
+          <td><input type="radio" name="attendance_${index}" value="Absent"></td>
+        `;
+        attendanceTableBody.appendChild(tr);
+      });
+    }
+
+    // Load saved attendance for selected date if exists
+    function loadAttendanceForDate(date) {
+      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+      const savedForDate = attendanceRecords[date];
+
+      if (!savedForDate) {
+        // No records for this date — clear selections
+        const radios = document.querySelectorAll('input[type="radio"]');
+        radios.forEach(r => r.checked = false);
+        return;
+      }
+
+      savedForDate.forEach((record, index) => {
+        const presentRadio = document.querySelector(`input[name="attendance_${index}"][value="Present"]`);
+        const absentRadio = document.querySelector(`input[name="attendance_${index}"][value="Absent"]`);
+        if(record.status === "Present") {
+          presentRadio.checked = true;
+        } else {
+          absentRadio.checked = true;
+        }
+      });
+    }
+
+    // Save attendance for selected date
+    attendanceForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const date = attendanceDateInput.value;
+      if (!date) {
+        alert("Please select a date.");
+        return;
+      }
+
+      const students = JSON.parse(localStorage.getItem('registrations')) || [];
+      if (students.length === 0) {
+        alert("No students to mark attendance for.");
+        return;
+      }
+
+      const attendanceForDate = [];
+
+      for(let i = 0; i < students.length; i++) {
+        const radios = document.getElementsByName(`attendance_${i}`);
+        let status = null;
+        radios.forEach(r => {
+          if(r.checked) status = r.value;
+        });
+        if (!status) {
+          alert("Please mark attendance for all students.");
+          return;
+        }
+        attendanceForDate.push({ studentName: students[i].studentName, status });
+      }
+
+      // Load all attendance records, update or create for selected date
+      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+      attendanceRecords[date] = attendanceForDate;
+      localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+
+      alert("Attendance saved successfully for " + date);
+    });
+
+    // On date change, load attendance if exists
+    attendanceDateInput.addEventListener('change', () => {
+      loadAttendanceForDate(attendanceDateInput.value);
+    });
+
+    // Initial load
+    loadStudents();
+    loadAttendanceForDate(attendanceDateInput.value);
+  </script>
+</body>
+</html>
